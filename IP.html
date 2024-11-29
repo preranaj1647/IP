@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copy Text Buttons</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #ddd;
+            border: 1px solid #aaa;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ccc;
+        }
+        #copiedMsg {
+            margin-top: 20px;
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Copy Text Example</h1>
+
+    <!-- Buttons for Datacenter1H&R and Datacenter2H&R -->
+    <button onclick="copyText(text1)">Datacenter1H&R</button>
+    <button onclick="copyText(text2)">Datacenter2H&R</button>
+<button onclick="copyText(text3)">1H&2R</button>
+<button onclick="copyText(text4)">2D1H2R</button>
+    <button onclick="copyText(text5)">scalableSimuln</button>
+    <button onclick="copyText(text6)">TCP</button>
+    <button onclick="copyText(text7)">UDP</button>
+ <button onclick="copyText(text8)">readymadeEnviron</button>
+
+    <p id="copiedMsg"></p>
+
+    <script>
+        // Code block for Button 1 (Datacenter1H&R)
+        const text1 = `
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+import org.cloudbus.cloudsim.*;
+
+public class CloudSimExample1 {
+    private static List<Cloudlet> cloudletlist;
+    private static List<Vm> vmlist;
+
+    public static void main(String[] args) {
+        Log.printLine("Starting CloudSimExample1...");
+        try {
+            int num_user = 1;
+            Calendar calendar = Calendar.getInstance();
+            Boolean trace_flag = false;
+            CloudSim.init(num_user, calendar, trace_flag);
+
+            Datacenter datacenter0 = createDatacenter("Datacenter_0");
+
+            DatacenterBroker broker = createBroker();
+            int brokerId = broker.getId();
+
+            vmlist = new ArrayList<>();
+            int vmid = 0;
+            int mips = 1000;
+            long size = 10000;
+            int ram = 512;
+            long bw = 1000;
+            int pesNumber = 1;
+            String vmm = "Xen";
+
+            Vm vm1 = new Vm(vmid++, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+            Vm vm2 = new Vm(vmid++, brokerId, mips / 2, pesNumber, ram - 256, bw, size * 3, vmm, new CloudletSchedulerTimeShared());
+
+            vmlist.add(vm1);
+            vmlist.add(vm2);
+
+            broker.submitVmList(vmlist);
+
+            cloudletlist = new ArrayList<>();
+            long length = 400000;
+            long fileSize = 300;
+            long outputSize = 300;
+            UtilizationModel utilizationModel = new UtilizationModelFull();
+
+            Cloudlet cloudlet1 = new Cloudlet(0, length, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
+            cloudlet1.setUserId(brokerId);
+
+            cloudletlist.add(cloudlet1);
+
+            broker.submitCloudletList(cloudletlist);
+
+            CloudSim.startSimulation();
+            CloudSim.stopSimulation();
+
+            List<Cloudlet> newList = broker.getCloudletReceivedList();
+            printCloudletList(newList);
+
+            Log.printLine("CloudSimExample1 finished!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.printLine("Unwanted errors happen");
+        }
+    }
+
+    private static Datacenter createDatacenter(String name) {
+        List<Host> hostList = new ArrayList<>();
+        List<Pe> peList = new ArrayList<>();
+        int mips = 1000;
+
+        peList.add(new Pe(0, new PeProvisionerSimple(mips)));
+
+        int hostId = 0;
+        int ram = 2048;
+        long storage = 1000000;
+        int bw = 10000;
+
+        hostList.add(new Host(hostId, new RamProvisionerSimple(ram), new BwProvisionerSimple(bw), storage, peList, new VmSchedulerTimeShared(peList)));
+
+        String arch = "x86";
+        String os = "Linux";
+        String vmm = "Xen";
+        double time_zone = 10.0;
+        double cost = 3.0;
+
+        LinkedList<Storage> storageList = new LinkedList<>();
+        DatacenterCharacteristics characteristics = new DatacenterCharacteristics(arch, os, vmm, hostList, time_zone, cost, 0.05, 0.001, 0.0);
+
+        Datacenter datacenter = null;
+        try {
+            datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return datacenter;
+    }
+
+    private static DatacenterBroker createBroker() {
+        DatacenterBroker broker = null;
+        try {
+            broker = new DatacenterBroker("Broker");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return broker;
+    }
+
+    private static void printCloudletList(List<Cloudlet> list) {
+        for (Cloudlet cloudlet : list) {
+            Log.printLine("Cloudlet ID: " + cloudlet.getCloudletId() + " STATUS: " + cloudlet.getCloudletStatus());
+        }
+    }
+}
+        `;
+
+        // Code block for Button 2 (Datacenter2H&R)
+        const text2 = `
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.cloudbus.cloudsim.*;
+
+public class CloudSimExample2 {
+    private static List<Cloudlet> cloudletList;
+    private static List<Vm> vmList;
+
+    public static void main(String[] args) {
+        Log.printLine("Starting CloudSimExample2...");
+
+        try {
+            // Initialize CloudSim
+            int numUsers = 1; 
+            Calendar calendar = Calendar.getInstance();
+            boolean traceFlag = false;
+
+            CloudSim.init(numUsers, calendar, traceFlag);
+
+            // Create Datacenter
+            Datacenter datacenter = createDatacenter("Datacenter_1");
+
+            // Create Broker
+            DatacenterBroker broker = createBroker();
+            int brokerId = broker.getId();
+
+            // Create VMs
+            vmList = new ArrayList<>();
+            int vmid = 0;
+            int mips = 1000;
+            long size = 10000; // Image size (MB)
+            int ram = 512; // VM memory (MB)
+            long bw = 1000;
+            int pesNumber = 1;
+            String vmm = "Xen";
+
+            Vm vm = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+            vmList.add(vm);
+            broker.submitVmList(vmList);
+
+            // Create Cloudlets
+            cloudletList = new ArrayList<>();
+            long length = 40000;
+            long fileSize = 300;
+            long outputSize = 300;
+            UtilizationModel utilizationModel = new UtilizationModelFull();
+
+            Cloudlet cloudlet = new Cloudlet(0, length, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
+            cloudlet.setUserId(brokerId);
+            cloudletList.add(cloudlet);
+
+            broker.submitCloudletList(cloudletList);
+
+            // Start simulation
+            CloudSim.startSimulation();
+            List<Cloudlet> newList = broker.getCloudletReceivedList();
+            CloudSim.stopSimulation();
+
+            printCloudletList(newList);
+
+            Log.printLine("CloudSimExample2 finished!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.printLine("Simulation terminated due to unexpected error.");
+        }
+    }
+
+    private static Datacenter createDatacenter(String name) {
+        List<Host> hostList = new ArrayList<>();
+
+        // Create CPU cores (PEs)
+        List<Pe> peList = new ArrayList<>();
+        int mips = 1000;
+        peList.add(new Pe(0, new PeProvisionerSimple(mips)));
+
+        // Create a host
+        int hostId = 0;
+        int ram = 2048; // Host memory (MB)
+        long storage = 1000000; // Host storage
+        int bw = 10000;
+
+        hostList.add(new Host(hostId, new RamProvisionerSimple(ram), new BwProvisionerSimple(bw), storage, peList, new VmSchedulerTimeShared(peList)));
+
+        String arch = "x86";
+        String os = "Linux";
+        String vmm = "Xen";
+        double timeZone = 10.0;
+        double cost = 3.0;
+
+        LinkedList<Storage> storageList = new LinkedList<>();
+        DatacenterCharacteristics characteristics = new DatacenterCharacteristics(arch, os, vmm, hostList, timeZone, cost, 0.05, 0.001, 0.0);
+
+        Datacenter datacenter = null;
+        try {
+            datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return datacenter;
+    }
+
+    private static DatacenterBroker createBroker() {
+        DatacenterBroker broker = null;
+        try {
+            broker = new DatacenterBroker("Broker");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return broker;
+    }
+
+    private static void printCloudletList(List<Cloudlet> list) {
+        Log.printLine("========== OUTPUT ==========");
+        for (Cloudlet cloudlet : list) {
+            Log.printLine("Cloudlet ID: " + cloudlet.getCloudletId() + " STATUS: " + cloudlet.getCloudletStatus());
+        }
+    }
+}
+        `;
+
+	const text3 = `
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.cloudbus.cloudsim.*;
+
+public class CloudSimExample3 {
+    private static List<Cloudlet> cloudletList;
+    private static List<Vm> vmList;
+
+    public static void main(String[] args) {
+        Log.printLine("Starting CloudSimExample3...");
+
+        try {
+            // Initialize CloudSim
+            int numUsers = 1;
+            Calendar calendar = Calendar.getInstance();
+            boolean traceFlag = false;
+
+            CloudSim.init(numUsers, calendar, traceFlag);
+
+            // Create Datacenter
+            Datacenter datacenter = createDatacenter("Datacenter_1H2R");
+
+            // Create Broker
+            DatacenterBroker broker = createBroker();
+            int brokerId = broker.getId();
+
+            // Create VMs
+            vmList = new ArrayList<>();
+            int vmid = 0;
+            int mips = 1000;
+            long size = 10000; // Image size (MB)
+            int ram = 2048;    // VM memory (MB)
+            long bw = 1000;
+            int pesNumber = 2; // 2 resources
+            String vmm = "Xen";
+
+            Vm vm = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+            vmList.add(vm);
+            broker.submitVmList(vmList);
+
+            // Create Cloudlets
+            cloudletList = new ArrayList<>();
+            long length = 40000;
+            long fileSize = 300;
+            long outputSize = 300;
+            UtilizationModel utilizationModel = new UtilizationModelFull();
+
+            Cloudlet cloudlet = new Cloudlet(0, length, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
+            cloudlet.setUserId(brokerId);
+            cloudletList.add(cloudlet);
+
+            broker.submitCloudletList(cloudletList);
+
+            // Start simulation
+            CloudSim.startSimulation();
+            List<Cloudlet> newList = broker.getCloudletReceivedList();
+            CloudSim.stopSimulation();
+
+            printCloudletList(newList);
+
+            Log.printLine("CloudSimExample3 finished!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.printLine("Simulation terminated due to unexpected error.");
+        }
+    }
+
+    private static Datacenter createDatacenter(String name) {
+        List<Host> hostList = new ArrayList<>();
+
+        // Create CPU cores (PEs)
+        List<Pe> peList = new ArrayList<>();
+        int mips = 1000;
+        peList.add(new Pe(0, new PeProvisionerSimple(mips)));
+        peList.add(new Pe(1, new PeProvisionerSimple(mips)));
+
+        // Create a host
+        int hostId = 0;
+        int ram = 2048; // Host memory (MB)
+        long storage = 1000000; // Host storage
+        int bw = 10000;
+
+        hostList.add(new Host(hostId, new RamProvisionerSimple(ram), new BwProvisionerSimple(bw), storage, peList, new VmSchedulerTimeShared(peList)));
+
+        String arch = "x86";
+        String os = "Linux";
+        String vmm = "Xen";
+        double timeZone = 10.0;
+        double cost = 3.0;
+
+        LinkedList<Storage> storageList = new LinkedList<>();
+        DatacenterCharacteristics characteristics = new DatacenterCharacteristics(arch, os, vmm, hostList, timeZone, cost, 0.05, 0.001, 0.0);
+
+        Datacenter datacenter = null;
+        try {
+            datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return datacenter;
+    }
+
+    private static DatacenterBroker createBroker() {
+        DatacenterBroker broker = null;
+        try {
+            broker = new DatacenterBroker("Broker");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return broker;
+    }
+
+    private static void printCloudletList(List<Cloudlet> list) {
+        Log.printLine("========== OUTPUT ==========");
+        for (Cloudlet cloudlet : list) {
+            Log.printLine("Cloudlet ID: " + cloudlet.getCloudletId() + " STATUS: " + cloudlet.getCloudletStatus());
+        }
+    }
+}
+        `;
+
+	const text4 = `
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.cloudbus.cloudsim.*;
+
+public class CloudSimExample4 {
+    private static List<Cloudlet> cloudletList;
+    private static List<Vm> vmList;
+
+    public static void main(String[] args) {
+        Log.printLine("Starting CloudSimExample4...");
+
+        try {
+            // Initialize CloudSim
+            int numUsers = 1;
+            Calendar calendar = Calendar.getInstance();
+            boolean traceFlag = false;
+
+            CloudSim.init(numUsers, calendar, traceFlag);
+
+            // Create Datacenters
+            Datacenter datacenter1 = createDatacenter("Datacenter_1");
+            Datacenter datacenter2 = createDatacenter("Datacenter_2");
+
+            // Create Broker
+            DatacenterBroker broker = createBroker();
+            int brokerId = broker.getId();
+
+            // Create VMs
+            vmList = new ArrayList<>();
+            int vmid = 0;
+            int mips = 1000;
+            long size = 10000; // Image size (MB)
+            int ram = 2048;    // VM memory (MB)
+            long bw = 1000;
+            int pesNumber = 2; // 2 resources
+            String vmm = "Xen";
+
+            Vm vm1 = new Vm(vmid++, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+            vmList.add(vm1);
+
+            broker.submitVmList(vmList);
+
+            // Create Cloudlets
+            cloudletList = new ArrayList<>();
+            long length = 40000;
+            long fileSize = 300;
+            long outputSize = 300;
+            UtilizationModel utilizationModel = new UtilizationModelFull();
+
+            Cloudlet cloudlet = new Cloudlet(0, length, pesNumber, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
+            cloudlet.setUserId(brokerId);
+            cloudletList.add(cloudlet);
+
+            broker.submitCloudletList(cloudletList);
+
+            // Start simulation
+            CloudSim.startSimulation();
+            List<Cloudlet> newList = broker.getCloudletReceivedList();
+            CloudSim.stopSimulation();
+
+            printCloudletList(newList);
+
+            Log.printLine("CloudSimExample4 finished!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.printLine("Simulation terminated due to unexpected error.");
+        }
+    }
+
+    private static Datacenter createDatacenter(String name) {
+        List<Host> hostList = new ArrayList<>();
+
+        // Create CPU cores (PEs)
+        List<Pe> peList = new ArrayList<>();
+        int mips = 1000;
+        peList.add(new Pe(0, new PeProvisionerSimple(mips)));
+        peList.add(new Pe(1, new PeProvisionerSimple(mips)));
+
+        // Create a host
+        int hostId = 0;
+        int ram = 2048; // Host memory (MB)
+        long storage = 1000000; // Host storage
+        int bw = 10000;
+
+        hostList.add(new Host(hostId, new RamProvisionerSimple(ram), new BwProvisionerSimple(bw), storage, peList, new VmSchedulerTimeShared(peList)));
+
+        String arch = "x86";
+        String os = "Linux";
+        String vmm = "Xen";
+        double timeZone = 10.0;
+        double cost = 3.0;
+
+        LinkedList<Storage> storageList = new LinkedList<>();
+        DatacenterCharacteristics characteristics = new DatacenterCharacteristics(arch, os, vmm, hostList, timeZone, cost, 0.05, 0.001, 0.0);
+
+        Datacenter datacenter = null;
+        try {
+            datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return datacenter;
+    }
+
+    private static DatacenterBroker createBroker() {
+        DatacenterBroker broker = null;
+        try {
+            broker = new DatacenterBroker("Broker");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return broker;
+    }
+
+    private static void printCloudletList(List<Cloudlet> list) {
+        Log.printLine("========== OUTPUT ==========");
+        for (Cloudlet cloudlet : list) {
+            Log.printLine("Cloudlet ID: " + cloudlet.getCloudletId() + " STATUS: " + cloudlet.getCloudletStatus());
+        }
+    }
+}
+        `;
+
+	const text5 = `
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.cloudbus.cloudsim.*;
+
+public class CloudSimExample5 {
+    private static List<Cloudlet> cloudletList;
+    private static List<Vm> vmList;
+
+    public static void main(String[] args) {
+        Log.printLine("Starting CloudSimExample5...");
+
+        try {
+            // Initialize CloudSim
+            int numUsers = 10; // Scaled to simulate multiple users
+            Calendar calendar = Calendar.getInstance();
+            boolean traceFlag = false;
+
+            CloudSim.init(numUsers, calendar, traceFlag);
+
+            // Create multiple Datacenters for scalability
+            Datacenter datacenter1 = createDatacenter("Datacenter_1");
+            Datacenter datacenter2 = createDatacenter("Datacenter_2");
+            Datacenter datacenter3 = createDatacenter("Datacenter_3");
+
+            // Create Broker
+            DatacenterBroker broker = createBroker();
+            int brokerId = broker.getId();
+
+            // Create multiple VMs
+            vmList = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                int vmid = i;
+                int mips = 1000;
+                long size = 10000; // Image size (MB)
+                int ram = 2048;    // VM memory (MB)
+                long bw = 1000;
+                int pesNumber = 1; // Number of resources
+                String vmm = "Xen";
+
+                Vm vm = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+                vmList.add(vm);
+            }
+            broker.submitVmList(vmList);
+
+            // Create multiple Cloudlets
+            cloudletList = new ArrayList<>();
+            for (int i = 0; i < 20; i++) {
+                int cloudletId = i;
+                long length = 50000;
+                long fileSize = 300;
+                long outputSize = 300;
+                UtilizationModel utilizationModel = new UtilizationModelFull();
+
+                Cloudlet cloudlet = new Cloudlet(cloudletId, length, 1, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
+                cloudlet.setUserId(brokerId);
+                cloudletList.add(cloudlet);
+            }
+            broker.submitCloudletList(cloudletList);
+
+            // Start simulation
+            CloudSim.startSimulation();
+            List<Cloudlet> newList = broker.getCloudletReceivedList();
+            CloudSim.stopSimulation();
+
+            printCloudletList(newList);
+
+            Log.printLine("CloudSimExample5 finished!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.printLine("Simulation terminated due to unexpected error.");
+        }
+    }
+
+    private static Datacenter createDatacenter(String name) {
+        List<Host> hostList = new ArrayList<>();
+
+        // Create multiple hosts with CPU cores (PEs)
+        for (int i = 0; i < 5; i++) {
+            List<Pe> peList = new ArrayList<>();
+            int mips = 1000;
+            for (int j = 0; j < 2; j++) {
+                peList.add(new Pe(j, new PeProvisionerSimple(mips)));
+            }
+
+            int hostId = i;
+            int ram = 8192; // Host memory (MB)
+            long storage = 1000000; // Host storage
+            int bw = 10000;
+
+            Host host = new Host(hostId, new RamProvisionerSimple(ram), new BwProvisionerSimple(bw), storage, peList, new VmSchedulerTimeShared(peList));
+            hostList.add(host);
+        }
+
+        String arch = "x86";
+        String os = "Linux";
+        String vmm = "Xen";
+        double timeZone = 10.0;
+        double cost = 3.0;
+
+        LinkedList<Storage> storageList = new LinkedList<>();
+        DatacenterCharacteristics characteristics = new DatacenterCharacteristics(arch, os, vmm, hostList, timeZone, cost, 0.05, 0.001, 0.0);
+
+        Datacenter datacenter = null;
+        try {
+            datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return datacenter;
+    }
+
+    private static DatacenterBroker createBroker() {
+        DatacenterBroker broker = null;
+        try {
+            broker = new DatacenterBroker("Broker");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return broker;
+    }
+
+    private static void printCloudletList(List<Cloudlet> list) {
+        Log.printLine("========== OUTPUT ==========");
+        for (Cloudlet cloudlet : list) {
+            Log.printLine("Cloudlet ID: " + cloudlet.getCloudletId() + " STATUS: " + cloudlet.getCloudletStatus());
+        }
+    }
+}
+        `;
+	
+	
+        // Code block for Button 6 (TCP)
+        const text6 = `
+# TCPClient.java
+import java.io.*;
+import java.net.*;
+
+class TCPClient {
+    public static void main(String[] args) {
+        try (
+            // Set up user input and connection to the server
+            BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+            Socket clientSocket = new Socket("localhost", 6789);
+            DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+            BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+        ) {
+            // Read a line from the user
+            System.out.print("Enter a sentence: ");
+            String sentence = inFromUser.readLine();
+
+            // Send the line to the server
+            outToServer.writeBytes(sentence + '\\n');
+
+            // Read the response from the server
+            String modifiedSentence = inFromServer.readLine();
+            System.out.println("FROM SERVER: " + modifiedSentence);
+        } catch (IOException e) {
+            System.err.println("Error in client communication: " + e.getMessage());
+        }
+    }
+}
+
+# TCPServer.java
+import java.io.*;
+import java.net.*;
+
+class TCPServer {
+    public static void main(String[] args) {
+        try (ServerSocket welcomeSocket = new ServerSocket(6789)) {
+            System.out.println("Server is listening on port 6789");
+
+            while (true) {
+                try {
+                    // Accept a new client connection
+                    Socket connectionSocket = welcomeSocket.accept();
+                    System.out.println("Client connected: " + connectionSocket.getInetAddress());
+
+                    // Handle the client in a new thread
+                    new Thread(new ClientHandler(connectionSocket)).start();
+                } catch (IOException e) {
+                    System.err.println("Error accepting client connection: " + e.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error starting server: " + e.getMessage());
+        }
+    }
+}
+
+class ClientHandler implements Runnable {
+    private final Socket connectionSocket;
+
+    public ClientHandler(Socket socket) {
+        this.connectionSocket = socket;
+    }
+
+    @Override
+    public void run() {
+        try (
+            BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+            DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream())
+        ) {
+            String clientSentence = inFromClient.readLine();
+            if (clientSentence != null) {
+                String capitalizedSentence = clientSentence.toUpperCase() + '\\n';
+                outToClient.writeBytes(capitalizedSentence);
+            }
+        } catch (IOException e) {
+            System.err.println("Error handling client connection: " + e.getMessage());
+        } finally {
+            try {
+                connectionSocket.close();
+            } catch (IOException e) {
+                System.err.println("Error closing socket: " + e.getMessage());
+            }
+        }
+    }
+}
+        `;
+
+	
+	 const text7 = `
+# UDPClient.java
+import java.io.*;
+import java.net.*;
+
+class UDPClient {
+    public static void main(String[] args) {
+        try (DatagramSocket clientSocket = new DatagramSocket()) {
+            InetAddress serverIPAddress = InetAddress.getByName("localhost");
+            byte[] sendData;
+            byte[] receiveData = new byte[1024];
+
+            // User input
+            BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+            System.out.print("Enter a sentence: ");
+            String sentence = inFromUser.readLine();
+            sendData = sentence.getBytes();
+
+            // Send data to server
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverIPAddress, 9876);
+            clientSocket.send(sendPacket);
+
+            // Receive response from server
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            clientSocket.receive(receivePacket);
+
+            String modifiedSentence = new String(receivePacket.getData(), 0, receivePacket.getLength());
+            System.out.println("FROM SERVER: " + modifiedSentence);
+        } catch (IOException e) {
+            System.err.println("Error in UDP Client: " + e.getMessage());
+        }
+    }
+}
+
+# UDPServer.java
+import java.io.*;
+import java.net.*;
+
+class UDPServer {
+    public static void main(String[] args) {
+        try (DatagramSocket serverSocket = new DatagramSocket(9876)) {
+            byte[] receiveData = new byte[1024];
+            byte[] sendData;
+
+            System.out.println("UDP Server is listening on port 9876");
+
+            while (true) {
+                // Receive data from client
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                serverSocket.receive(receivePacket);
+
+                String clientSentence = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                System.out.println("Received: " + clientSentence);
+
+                // Convert client's sentence to uppercase
+                String capitalizedSentence = clientSentence.toUpperCase();
+                sendData = capitalizedSentence.getBytes();
+
+                // Send response to client
+                InetAddress clientIPAddress = receivePacket.getAddress();
+                int clientPort = receivePacket.getPort();
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientIPAddress, clientPort);
+                serverSocket.send(sendPacket);
+            }
+        } catch (IOException e) {
+            System.err.println("Error in UDP Server: " + e.getMessage());
+        }
+    }
+}
+        `;
+
+	// Code block for Button 8 (readymadeEnviron)
+        const text8 = `
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.cloudbus.cloudsim.*;
+
+public class ReadymadeEnvironment {
+    private static List<Cloudlet> cloudletList;
+    private static List<Vm> vmList;
+
+    public static void main(String[] args) {
+        Log.printLine("Starting ReadymadeEnvironment Simulation...");
+
+        try {
+            // Initialize CloudSim
+            int numUsers = 1;
+            Calendar calendar = Calendar.getInstance();
+            boolean traceFlag = false;
+
+            CloudSim.init(numUsers, calendar, traceFlag);
+
+            // Pre-configured Datacenter
+            Datacenter datacenter = createDatacenter("Readymade_Datacenter");
+
+            // Create Broker
+            DatacenterBroker broker = createBroker();
+            int brokerId = broker.getId();
+
+            // Create VMs using pre-configured settings
+            vmList = new ArrayList<>();
+            for (int i = 0; i < 5; i++) {
+                int vmid = i;
+                int mips = 1000;
+                long size = 10000; // Image size (MB)
+                int ram = 1024;    // VM memory (MB)
+                long bw = 1000;
+                int pesNumber = 1; // Number of processing elements
+                String vmm = "Xen";
+
+                Vm vm = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+                vmList.add(vm);
+            }
+            broker.submitVmList(vmList);
+
+            // Create Cloudlets with default utilization settings
+            cloudletList = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                int cloudletId = i;
+                long length = 50000;
+                long fileSize = 300;
+                long outputSize = 300;
+                UtilizationModel utilizationModel = new UtilizationModelFull();
+
+                Cloudlet cloudlet = new Cloudlet(cloudletId, length, 1, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel);
+                cloudlet.setUserId(brokerId);
+                cloudletList.add(cloudlet);
+            }
+            broker.submitCloudletList(cloudletList);
+
+            // Start simulation
+            CloudSim.startSimulation();
+            List<Cloudlet> newList = broker.getCloudletReceivedList();
+            CloudSim.stopSimulation();
+
+            printCloudletList(newList);
+
+            Log.printLine("ReadymadeEnvironment Simulation Finished!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.printLine("Simulation terminated due to unexpected error.");
+        }
+    }
+
+    private static Datacenter createDatacenter(String name) {
+        List<Host> hostList = new ArrayList<>();
+
+        // Host Configuration
+        for (int i = 0; i < 3; i++) {
+            List<Pe> peList = new ArrayList<>();
+            int mips = 1000;
+            for (int j = 0; j < 4; j++) {
+                peList.add(new Pe(j, new PeProvisionerSimple(mips)));
+            }
+
+            int hostId = i;
+            int ram = 16384; // Host memory (MB)
+            long storage = 1000000; // Host storage
+            int bw = 10000;
+
+            hostList.add(new Host(hostId, new RamProvisionerSimple(ram), new BwProvisionerSimple(bw), storage, peList, new VmSchedulerTimeShared(peList)));
+        }
+
+        String arch = "x86";
+        String os = "Linux";
+        String vmm = "Xen";
+        double timeZone = 10.0;
+        double cost = 3.0;
+
+        LinkedList<Storage> storageList = new LinkedList<>();
+        DatacenterCharacteristics characteristics = new DatacenterCharacteristics(arch, os, vmm, hostList, timeZone, cost, 0.05, 0.001, 0.0);
+
+        Datacenter datacenter = null;
+        try {
+            datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return datacenter;
+    }
+
+    private static DatacenterBroker createBroker() {
+        DatacenterBroker broker = null;
+        try {
+            broker = new DatacenterBroker("Broker");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return broker;
+    }
+
+    private static void printCloudletList(List<Cloudlet> list) {
+        Log.printLine("========== OUTPUT ==========");
+        for (Cloudlet cloudlet : list) {
+            Log.printLine("Cloudlet ID: " + cloudlet.getCloudletId() + " STATUS: " + cloudlet.getCloudletStatus());
+        }
+    }
+}
+        `;
+
+        // Function to copy text using Clipboard API
+        async function copyText(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                const messageElement = document.getElementById("copiedMsg");
+                messageElement.innerText = "Text copied successfully!";
+                messageElement.style.color = "green";
+                setTimeout(() => (messageElement.innerText = ""), 2000);
+            } catch (err) {
+                const messageElement = document.getElementById("copiedMsg");
+                messageElement.innerText = "Failed to copy text. Check your browser permissions.";
+                messageElement.style.color = "red";
+                console.error("Error copying text:", err);
+            }
+        }
+    </script>
+</body>
+</html>
